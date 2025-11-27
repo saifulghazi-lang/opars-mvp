@@ -16,6 +16,7 @@ interface AuthContextType {
     session: Session | null;
     loading: boolean;
     signOut: () => Promise<void>;
+    mockLogin?: (role: Role) => Promise<void>; // Optional for dev mode
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,6 +25,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
+
+    // --- DEV MODE: MOCK AUTH ---
+    const mockLogin = async (role: Role) => {
+        setLoading(true);
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        const mockUser: User = {
+            id: role === 'admin' ? 'dev-admin-id' : 'dev-member-id',
+            email: role === 'admin' ? 'admin@opars.com' : 'member@opars.com',
+            role: role,
+            department: role === 'admin' ? 'Secretariat' : 'Finance'
+        };
+
+        setUser(mockUser);
+        setLoading(false);
+    };
 
     useEffect(() => {
         // Check active session
@@ -81,7 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, session, loading, signOut }}>
+        <AuthContext.Provider value={{ user, session, loading, signOut, mockLogin }}>
             {children}
         </AuthContext.Provider>
     );

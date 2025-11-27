@@ -113,43 +113,57 @@ export function ProposalDetail() {
         if (!user || !proposal) return;
         setSubmitting(true);
 
-        // FALLBACK: Direct Database Insert (Bypassing Edge Function due to CORS/Network issues)
-        const { error } = await supabase
-            .from('reviews')
-            .upsert({
-                proposal_id: proposal.id,
-                reviewer_id: user.id,
-                vote_status: vote,
-                comments: comments,
-                signature_data: signature, // Store signature
-            }, { onConflict: 'proposal_id,reviewer_id' });
+        // SIMULATION MODE (For Dev/Testing without real Auth)
+        if (user.id === 'dev-admin-id') {
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 800));
 
-        if (error) {
-            console.error('Error submitting vote:', error);
-            toast.error('Failed to submit vote');
+            // Skip database call, go straight to success
+            console.log('SIMULATION: Vote submitted', { vote, comments, signature });
         } else {
-            // Optimistic update
-            setUserReview({
-                id: userReview?.id || 'temp',
-                vote_status: vote,
-                comments: comments,
-                reviewer_id: user.id,
-            });
+            // REAL MODE
+            // FALLBACK: Direct Database Insert (Bypassing Edge Function due to CORS/Network issues)
+            const { error } = await supabase
+                .from('reviews')
+                .upsert({
+                    proposal_id: proposal.id,
+                    reviewer_id: user.id,
+                    vote_status: vote,
+                    comments: comments,
+                    signature_data: signature, // Store signature
+                }, { onConflict: 'proposal_id,reviewer_id' });
 
-            // If approved, check if we should update proposal status (Optimistic)
-            if (vote === 'Approve') {
-                if (proposal.status === 'Pending') {
-                    setProposal({ ...proposal, status: 'Reviewing' });
-                }
+            if (error) {
+                console.error('Error submitting vote:', error);
+                toast.error('Failed to submit vote');
+                setSubmitting(false);
+                return;
             }
-
-            setIsRejectModalOpen(false);
-            setIsSignatureModalOpen(false);
-            toast.success(`Vote Recorded: ${vote === 'Approve' ? 'Approved' : 'Rejected'}`);
-
-            // Hide keyboard hint after first vote
-            setShowKeyboardHint(false);
         }
+
+        // Optimistic update (Runs for both Real and Simulation modes)
+        setUserReview({
+            id: userReview?.id || 'temp',
+            vote_status: vote,
+            comments: comments,
+            reviewer_id: user.id,
+        });
+
+        // If approved, check if we should update proposal status (Optimistic)
+        if (vote === 'Approve') {
+            // In simulation/dev mode, or if pending, switch to Reviewing
+            if (proposal.status === 'Pending' || user.id === 'dev-admin-id') {
+                setProposal(prev => prev ? ({ ...prev, status: 'Reviewing' }) : null);
+            }
+        }
+
+        setIsRejectModalOpen(false);
+        setIsSignatureModalOpen(false);
+        toast.success(`Vote Recorded: ${vote === 'Approve' ? 'Approved' : 'Rejected'}`);
+
+        // Hide keyboard hint after first vote
+        setShowKeyboardHint(false);
+
         setSubmitting(false);
     };
 

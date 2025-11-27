@@ -5,8 +5,11 @@ import { Button } from '../components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/Card';
 import { Lock } from 'lucide-react';
 
+import { useAuth } from '../lib/auth';
+
 export function Login() {
     const navigate = useNavigate();
+    const { mockLogin } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -100,18 +103,28 @@ export function Login() {
                     <div className="mt-6 grid grid-cols-2 gap-3">
                         <Button
                             variant="outline"
-                            onClick={() => {
-                                setEmail('admin@opars.com');
-                                setError(null);
+                            onClick={async () => {
+                                if (mockLogin) {
+                                    await mockLogin('admin');
+                                    navigate('/');
+                                } else {
+                                    setEmail('admin@opars.com');
+                                    setError(null);
+                                }
                             }}
                         >
                             Admin Demo
                         </Button>
                         <Button
                             variant="outline"
-                            onClick={() => {
-                                setEmail('member@opars.com');
-                                setError(null);
+                            onClick={async () => {
+                                if (mockLogin) {
+                                    await mockLogin('member');
+                                    navigate('/');
+                                } else {
+                                    setEmail('member@opars.com');
+                                    setError(null);
+                                }
                             }}
                         >
                             Member Demo
