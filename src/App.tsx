@@ -35,7 +35,13 @@ function App() {
             <Route path="/proposals" element={<div className="p-4">Proposals List Placeholder</div>} />
           </Route>
         </Routes>
-        <Toaster position="top-center" richColors />
+        <Toaster
+          position="bottom-right"
+          richColors
+          toastOptions={{
+            className: 'md:!bottom-4 md:!right-4 !top-4 md:!top-auto',
+          }}
+        />
       </Router>
     </AuthProvider>
   );

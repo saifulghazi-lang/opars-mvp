@@ -22,11 +22,11 @@ export function Layout({ children }: LayoutProps) {
         <div className="flex h-screen bg-background text-foreground font-sans">
             {/* Sidebar */}
             <aside className="w-64 border-r border-border bg-card flex flex-col">
-                <div className="p-6 border-b border-border flex items-center gap-3">
-                    <img src="/logo.png" alt="UKMSHAPE Logo" className="h-8 w-auto" />
+                <div className="p-6 border-b border-border flex flex-col items-start gap-4">
+                    <img src="/logo.png" alt="UKMSHAPE Logo" className="h-8 w-auto object-contain" />
                     <div>
-                        <h1 className="text-lg font-bold tracking-tight text-primary leading-tight">UKMSHAPE</h1>
-                        <p className="text-[10px] text-muted-foreground font-medium">OPARS System</p>
+                        <h1 className="text-xl font-bold tracking-tight text-secondary leading-tight">OPARS</h1>
+                        <p className="text-[10px] text-muted-foreground font-medium">Command Center</p>
                     </div>
                 </div>
 
