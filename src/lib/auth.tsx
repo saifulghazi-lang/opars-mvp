@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from './supabase';
+import type { Session } from '@supabase/supabase-js';
 
 type Role = 'admin' | 'member';
 
@@ -11,55 +13,75 @@ interface User {
 
 interface AuthContextType {
     user: User | null;
-    loginAsAdmin: () => void;
-    loginAsMember: () => void;
-    logout: () => void;
+    session: Session | null;
+    loading: boolean;
+    signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const MOCK_ADMIN: User = {
-    id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-    email: 'admin@opars.com',
-    role: 'admin',
-    department: 'Secretariat',
-};
-
-const MOCK_MEMBER: User = {
-    id: 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22',
-    email: 'member@opars.com',
-    role: 'member',
-    department: 'Finance',
-};
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
+    const [session, setSession] = useState<Session | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    // Auto-login as admin for dev convenience, or check local storage
     useEffect(() => {
-        const storedRole = localStorage.getItem('opars_role');
-        if (storedRole === 'admin') setUser(MOCK_ADMIN);
-        else if (storedRole === 'member') setUser(MOCK_MEMBER);
-        else setUser(MOCK_ADMIN); // Default to admin for MVP
+        // Check active session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setSession(session);
+            if (session) fetchProfile(session.user.id, session.user.email!);
+            else setLoading(false);
+        });
+
+        // Listen for changes
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+            setSession(session);
+            if (session) fetchProfile(session.user.id, session.user.email!);
+            else {
+                setUser(null);
+                setLoading(false);
+            }
+        });
+
+        return () => subscription.unsubscribe();
     }, []);
 
-    const loginAsAdmin = () => {
-        setUser(MOCK_ADMIN);
-        localStorage.setItem('opars_role', 'admin');
-    };
+    async function fetchProfile(userId: string, email: string) {
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', userId)
+                .single();
 
-    const loginAsMember = () => {
-        setUser(MOCK_MEMBER);
-        localStorage.setItem('opars_role', 'member');
-    };
+            if (error) {
+                console.error('Error fetching profile:', error);
+                // Fallback or handle error - maybe user exists in Auth but not in profiles table yet
+            } else if (data) {
+                setUser({
+                    id: data.id,
+                    email: data.email || email,
+                    role: data.role as Role,
+                    department: data.department,
+                });
+            }
+        } catch (error) {
+            console.error('Unexpected error fetching profile:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
 
-    const logout = () => {
+    const signOut = async () => {
+        await supabase.auth.signOut();
         setUser(null);
-        localStorage.removeItem('opars_role');
+        setSession(null);
     };
 
     return (
-        <AuthContext.Provider value={{ user, loginAsAdmin, loginAsMember, logout }}>
+        <AuthContext.Provider value={{ user, session, loading, signOut }}>
             {children}
         </AuthContext.Provider>
     );

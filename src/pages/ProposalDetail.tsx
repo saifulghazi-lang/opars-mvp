@@ -8,6 +8,8 @@ import { Modal } from '../components/ui/Modal';
 import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 import { ArrowLeft, ExternalLink, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { toast } from 'sonner';
+import { Spinner } from '../components/ui/Spinner';
 
 interface Proposal {
     id: string;
@@ -71,6 +73,7 @@ export function ProposalDetail() {
         if (!user || !proposal) return;
         setSubmitting(true);
 
+        // FALLBACK: Direct Database Insert (Bypassing Edge Function due to CORS/Network issues)
         const { error } = await supabase
             .from('reviews')
             .upsert({
@@ -82,7 +85,7 @@ export function ProposalDetail() {
 
         if (error) {
             console.error('Error submitting vote:', error);
-            alert('Failed to submit vote');
+            toast.error('Failed to submit vote');
         } else {
             // Optimistic update
             setUserReview({
@@ -92,26 +95,20 @@ export function ProposalDetail() {
                 reviewer_id: user.id,
             });
 
-            // If approved, check if we should update proposal status (simplified logic for MVP)
+            // If approved, check if we should update proposal status (Optimistic)
             if (vote === 'Approve') {
-                // In a real app, we'd check if all reviewers approved.
-                // For MVP, let's just update status to Decided if Admin approves or something.
-                // Actually, let's just leave it as is for now, maybe update status to Reviewing if it was Pending.
                 if (proposal.status === 'Pending') {
-                    await supabase.from('proposals').update({ status: 'Reviewing' }).eq('id', proposal.id);
                     setProposal({ ...proposal, status: 'Reviewing' });
                 }
-            } else if (vote === 'Reject') {
-                // If rejected, maybe set to Decided immediately?
-                // For MVP, let's keep it simple.
             }
 
             setIsRejectModalOpen(false);
+            toast.success('Vote submitted successfully');
         }
         setSubmitting(false);
     };
 
-    if (loading) return <div className="p-8">Loading...</div>;
+    if (loading) return <div className="flex justify-center p-8"><Spinner className="h-8 w-8 text-primary" /></div>;
     if (!proposal) return <div className="p-8">Proposal not found</div>;
 
     return (

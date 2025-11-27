@@ -6,6 +6,7 @@ import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 import { Link } from 'react-router-dom';
 import { Plus, FileText, CheckCircle, Clock } from 'lucide-react';
+import { Spinner } from '../components/ui/Spinner';
 
 interface Proposal {
     id: string;
@@ -83,7 +84,7 @@ export function Dashboard() {
                 <CardContent>
                     <div className="space-y-4">
                         {loading ? (
-                            <p>Loading...</p>
+                            <div className="flex justify-center py-8"><Spinner className="h-8 w-8 text-primary" /></div>
                         ) : proposals.length === 0 ? (
                             <p className="text-muted-foreground">No proposals found.</p>
                         ) : (

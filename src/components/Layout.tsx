@@ -1,6 +1,8 @@
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, FileText, Settings, LogOut } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useAuth } from '../lib/auth';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -8,6 +10,7 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
     const location = useLocation();
+    const { signOut } = useAuth();
 
     const navItems = [
         { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
@@ -47,7 +50,10 @@ export function Layout({ children }: LayoutProps) {
                 </nav>
 
                 <div className="p-4 border-t border-border">
-                    <button className="flex items-center gap-3 px-3 py-2 w-full rounded-md text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors">
+                    <button
+                        onClick={() => signOut()}
+                        className="flex items-center gap-3 px-3 py-2 w-full rounded-md text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                    >
                         <LogOut className="w-4 h-4" />
                         Sign Out
                     </button>
