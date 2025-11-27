@@ -100,36 +100,18 @@ export function Login() {
                     <div className="mt-6 grid grid-cols-2 gap-3">
                         <Button
                             variant="outline"
-                            onClick={async () => {
-                                setLoading(true);
-                                const { error } = await supabase.auth.signInWithPassword({
-                                    email: 'admin@opars.com',
-                                    password: 'Kriminal12!',
-                                });
-                                if (error) {
-                                    setError(error.message);
-                                    setLoading(false);
-                                } else {
-                                    navigate('/');
-                                }
+                            onClick={() => {
+                                setEmail('admin@opars.com');
+                                setError(null);
                             }}
                         >
                             Admin Demo
                         </Button>
                         <Button
                             variant="outline"
-                            onClick={async () => {
-                                setLoading(true);
-                                const { error } = await supabase.auth.signInWithPassword({
-                                    email: 'member@opars.com',
-                                    password: 'Kriminal12!',
-                                });
-                                if (error) {
-                                    setError(error.message);
-                                    setLoading(false);
-                                } else {
-                                    navigate('/');
-                                }
+                            onClick={() => {
+                                setEmail('member@opars.com');
+                                setError(null);
                             }}
                         >
                             Member Demo

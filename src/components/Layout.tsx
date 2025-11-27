@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, FileText, LogOut } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../lib/auth';
 
@@ -15,16 +15,19 @@ export function Layout({ children }: LayoutProps) {
     const navItems = [
         { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
         { icon: FileText, label: 'Proposals', path: '/proposals' },
-        { icon: Settings, label: 'Settings', path: '/settings' },
+        // { icon: Settings, label: 'Settings', path: '/settings' }, // Commented out as not implemented yet
     ];
 
     return (
         <div className="flex h-screen bg-background text-foreground font-sans">
             {/* Sidebar */}
             <aside className="w-64 border-r border-border bg-card flex flex-col">
-                <div className="p-6 border-b border-border">
-                    <h1 className="text-2xl font-bold tracking-tight text-primary">OPARS</h1>
-                    <p className="text-xs text-muted-foreground mt-1">Command Center</p>
+                <div className="p-6 border-b border-border flex items-center gap-3">
+                    <img src="/logo.png" alt="UKMSHAPE Logo" className="h-8 w-auto" />
+                    <div>
+                        <h1 className="text-lg font-bold tracking-tight text-primary leading-tight">UKMSHAPE</h1>
+                        <p className="text-[10px] text-muted-foreground font-medium">OPARS System</p>
+                    </div>
                 </div>
 
                 <nav className="flex-1 p-4 space-y-1">
