@@ -68,15 +68,15 @@ export function Dashboard() {
     ];
 
     return (
-        <div className="space-y-10 max-w-7xl mx-auto">
-            <div className="flex items-center justify-between">
+        <div className="space-y-6 md:space-y-10 max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Command Center</h2>
-                    <p className="text-muted-foreground mt-2">Welcome back, {user?.email}</p>
+                    <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Command Center</h2>
+                    <p className="text-muted-foreground mt-1 md:mt-2">Welcome back, {user?.email}</p>
                 </div>
                 {user?.role === 'admin' && (
-                    <Link to="/proposals/new">
-                        <Button>
+                    <Link to="/proposals/new" className="w-full md:w-auto">
+                        <Button className="w-full md:w-auto">
                             <Plus className="mr-2 h-4 w-4" />
                             New Proposal
                         </Button>
@@ -118,11 +118,11 @@ export function Dashboard() {
                                     to={`/proposals/${proposal.id}`}
                                     className="flex items-center justify-between py-4 px-4 -mx-4 hover:bg-accent/50 transition-colors group"
                                 >
-                                    <div className="flex flex-col gap-1.5 flex-1">
-                                        <div className="font-semibold text-base group-hover:text-primary transition-colors">
+                                    <div className="flex flex-col gap-1.5 flex-1 min-w-0 mr-4">
+                                        <div className="font-semibold text-base group-hover:text-primary transition-colors truncate">
                                             {proposal.title}
                                         </div>
-                                        <div className="text-sm text-muted-foreground font-serif">
+                                        <div className="text-sm text-muted-foreground font-serif truncate">
                                             {proposal.department} • {new Date(proposal.created_at).toLocaleDateString('en-US', {
                                                 month: 'short',
                                                 day: 'numeric',
@@ -130,8 +130,10 @@ export function Dashboard() {
                                             })}
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <Badge status={proposal.status} />
+                                    <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+                                        <div className="scale-90 md:scale-100 origin-right">
+                                            <Badge status={proposal.status} />
+                                        </div>
                                         <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                                     </div>
                                 </Link>
@@ -161,11 +163,11 @@ export function Dashboard() {
                                     to={`/proposals/${proposal.id}`}
                                     className="flex items-center justify-between py-4 px-4 -mx-4 hover:bg-accent/50 transition-colors group"
                                 >
-                                    <div className="flex flex-col gap-1.5 flex-1">
-                                        <div className="font-semibold text-base group-hover:text-primary transition-colors">
+                                    <div className="flex flex-col gap-1.5 flex-1 min-w-0 mr-4">
+                                        <div className="font-semibold text-base group-hover:text-primary transition-colors truncate">
                                             {proposal.title}
                                         </div>
-                                        <div className="text-sm text-muted-foreground font-serif">
+                                        <div className="text-sm text-muted-foreground font-serif truncate">
                                             {proposal.department} • {new Date(proposal.created_at).toLocaleDateString('en-US', {
                                                 month: 'short',
                                                 day: 'numeric',
@@ -173,8 +175,10 @@ export function Dashboard() {
                                             })}
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <Badge status={proposal.status} />
+                                    <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+                                        <div className="scale-90 md:scale-100 origin-right">
+                                            <Badge status={proposal.status} />
+                                        </div>
                                         <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                                     </div>
                                 </Link>

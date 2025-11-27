@@ -192,9 +192,9 @@ export function ProposalDetail() {
                 Back to Dashboard
             </Button>
 
-            {/* Keyboard Hint Banner */}
+            {/* Keyboard Hint Banner - Hidden on mobile */}
             {showKeyboardHint && !userReview && (
-                <div className="max-w-3xl mx-auto">
+                <div className="hidden md:block max-w-3xl mx-auto">
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
                         <div className="flex items-start gap-4">
                             <Keyboard className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
@@ -216,15 +216,15 @@ export function ProposalDetail() {
                 </div>
             )}
 
-            {/* Sticky Decision Card - Top Position */}
+            {/* Sticky Decision Card - Bottom on Mobile, Top on Desktop */}
             {!userReview && (
-                <div className="sticky top-6 z-10 mb-8">
+                <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-md border-t z-50 md:static md:bg-transparent md:border-none md:p-0 md:mb-8 md:sticky md:top-6">
                     <div className="max-w-3xl mx-auto">
                         <Card className="border-yellow-300 shadow-lg bg-white/95 backdrop-blur-sm">
-                            <CardContent className="pt-6">
-                                <div className="flex items-center justify-between gap-6">
-                                    <p className="text-sm text-muted-foreground flex-shrink-0">Cast your vote:</p>
-                                    <div className="flex gap-3 flex-1 max-w-md">
+                            <CardContent className="p-4 md:pt-6">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
+                                    <p className="text-sm text-muted-foreground flex-shrink-0 hidden md:block">Cast your vote:</p>
+                                    <div className="flex gap-3 flex-1 md:max-w-md">
                                         <Button
                                             className="flex-1 bg-green-600 hover:bg-green-700 text-white h-12 text-base font-semibold"
                                             onClick={handleApproveClick}
