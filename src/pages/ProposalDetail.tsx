@@ -114,7 +114,7 @@ export function ProposalDetail() {
         setSubmitting(true);
 
         // SIMULATION MODE (For Dev/Testing without real Auth)
-        if (user.id === 'dev-admin-id') {
+        if (user.id.startsWith('dev-')) {
             // Simulate network delay
             await new Promise(resolve => setTimeout(resolve, 800));
 
@@ -152,7 +152,7 @@ export function ProposalDetail() {
         // If approved, check if we should update proposal status (Optimistic)
         if (vote === 'Approve') {
             // In simulation/dev mode, or if pending, switch to Reviewing
-            if (proposal.status === 'Pending' || user.id === 'dev-admin-id') {
+            if (proposal.status === 'Pending' || user.id.startsWith('dev-')) {
                 setProposal(prev => prev ? ({ ...prev, status: 'Reviewing' }) : null);
             }
         }
