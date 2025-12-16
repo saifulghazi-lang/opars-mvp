@@ -88,31 +88,6 @@ export function Login() {
         setError(null);
     };
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!selectedMember) return;
-
-        setLoading(true);
-        setError(null);
-
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email: selectedMember.email,
-            password,
-        });
-
-        if (error) {
-            setError(error.message);
-            setLoading(false);
-        } else {
-            // Show welcome toast
-            const userName = data.user?.user_metadata?.name || selectedMember.position;
-            toast.success(`Welcome, ${userName}!`, {
-                description: 'You have successfully signed in.',
-            });
-            navigate('/dashboard');
-        }
-    };
-
     const handleClose = () => {
         setSelectedMember(null);
         setPassword('');
@@ -122,6 +97,73 @@ export function Login() {
     const handleBackdropClick = (e: React.MouseEvent) => {
         if (e.target === e.currentTarget) {
             handleClose();
+        }
+    };
+
+    const getFriendlyErrorMessage = (error: any) => {
+        const message = error.message || '';
+        const lowerMsg = message.toLowerCase();
+
+        if (lowerMsg.includes('invalid login credentials')) {
+            return 'Incorrect password. Please try again.';
+        }
+        if (lowerMsg.includes('database error querying schema') || lowerMsg.includes('internal server error')) {
+            return 'System is currently updating. Please restart the page or try again in a few minutes.';
+        }
+        if (lowerMsg.includes('email not confirmed')) {
+            return 'Please verify your email address before logging in.';
+        }
+        if (lowerMsg.includes('network')) {
+            return 'Network error. Please check your internet connection.';
+        }
+
+        // Default fallbacks
+        return message || 'An unexpected error occurred. Please try again.';
+    };
+
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedMember) return;
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: selectedMember.email,
+                password,
+            });
+
+            if (error) {
+                console.error('Login Error:', error);
+                const friendlyMsg = getFriendlyErrorMessage(error);
+
+                // Set inline error
+                setError(friendlyMsg);
+
+                // Show popup toast
+                toast.error('Login Failed', {
+                    description: friendlyMsg,
+                });
+            } else {
+                // Show welcome toast
+                const userName = data.user?.user_metadata?.name || selectedMember.position;
+                toast.success(`Welcome, ${userName}!`, {
+                    description: 'You have successfully signed in.',
+                });
+                navigate('/dashboard');
+            }
+        } catch (err: any) {
+            console.error('Unexpected Login Error:', err);
+            const friendlyMsg = getFriendlyErrorMessage(err);
+            // Set inline error
+            setError(friendlyMsg);
+            // Show popup toast
+            toast.error('Login Failed', {
+                description: friendlyMsg,
+            });
+        } finally {
+            setLoading(false);
         }
     };
 
