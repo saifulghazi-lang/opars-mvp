@@ -201,7 +201,7 @@ export function ProposalDetail() {
 
     return (
         <div className="space-y-6 pb-24">
-            <Button variant="ghost" onClick={() => navigate('/')} className="pl-0">
+            <Button variant="ghost" onClick={() => navigate('/dashboard')} className="pl-0">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Dashboard
             </Button>

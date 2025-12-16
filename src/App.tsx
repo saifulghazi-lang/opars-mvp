@@ -5,7 +5,9 @@ import { Layout } from './components/Layout';
 import { Dashboard } from './pages/Dashboard';
 import { ProposalCreate } from './pages/ProposalCreate';
 import { ProposalDetail } from './pages/ProposalDetail';
+import { ProposalsList } from './pages/ProposalsList';
 import { Login } from './pages/Login';
+import { Landing } from './pages/Landing';
 
 function ProtectedRoute() {
   const { user, loading } = useAuth();
@@ -25,14 +27,15 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
 
           <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/proposals/new" element={<ProposalCreate />} />
             <Route path="/proposals/:id" element={<ProposalDetail />} />
             <Route path="/settings" element={<div className="p-4">Settings Placeholder</div>} />
-            <Route path="/proposals" element={<div className="p-4">Proposals List Placeholder</div>} />
+            <Route path="/proposals" element={<ProposalsList />} />
           </Route>
         </Routes>
         <Toaster
