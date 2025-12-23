@@ -5,15 +5,15 @@
  * 
  * Usage:
  * 1. Get your service_role key from Supabase Dashboard > Settings > API
- * 2. Run: node create_users.mjs YOUR_SERVICE_ROLE_KEY
+ * 2. Run: node create_users.mjs YOUR_SERVICE_ROLE_KEY YOUR_PASSWORD
+ * 
+ * Example:
+ *   node create_users.mjs eyJhbGciOiJIUzI1NiIs... MySecurePassword123!
  */
 
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = 'https://qsdozpztsuxssgzbyyhc.supabase.co';
-
-// Default password for all users (change this!)
-const DEFAULT_PASSWORD = 'Opars2024!';
 
 // UKMShape Committee Members
 const USERS = [
@@ -67,7 +67,7 @@ const USERS = [
   }
 ];
 
-async function createUsers(serviceRoleKey) {
+async function createUsers(serviceRoleKey, password) {
   const supabase = createClient(SUPABASE_URL, serviceRoleKey, {
     auth: {
       autoRefreshToken: false,
@@ -76,7 +76,6 @@ async function createUsers(serviceRoleKey) {
   });
 
   console.log('🚀 Creating OPARS users...\n');
-  console.log(`📧 Default password for all users: ${DEFAULT_PASSWORD}\n`);
 
   for (const user of USERS) {
     console.log(`Creating ${user.position} (${user.email})...`);
@@ -84,7 +83,7 @@ async function createUsers(serviceRoleKey) {
     // Create user in Auth
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
       email: user.email,
-      password: DEFAULT_PASSWORD,
+      password: password,
       email_confirm: true, // Skip email verification
       user_metadata: {
         name: user.name,
@@ -123,19 +122,22 @@ async function createUsers(serviceRoleKey) {
 
   console.log('\n✨ Done! All users created.');
   console.log(`\n📋 Login credentials:`);
-  console.log(`   Password: ${DEFAULT_PASSWORD}`);
+  console.log(`   Password: (the one you provided)`);
   console.log(`   Emails: See list above`);
 }
 
 // Main
 const serviceRoleKey = process.argv[2];
+const password = process.argv[3];
 
-if (!serviceRoleKey) {
-  console.log('❌ Missing service_role key!\n');
-  console.log('Usage: node create_users.mjs YOUR_SERVICE_ROLE_KEY');
-  console.log('\nGet your service_role key from:');
+if (!serviceRoleKey || !password) {
+  console.log('❌ Missing arguments!\n');
+  console.log('Usage: node create_users.mjs SERVICE_ROLE_KEY PASSWORD');
+  console.log('\nExample:');
+  console.log('  node create_users.mjs eyJhbGci... MySecurePassword123!\n');
+  console.log('Get your service_role key from:');
   console.log('Supabase Dashboard > Settings > API > service_role (secret)');
   process.exit(1);
 }
 
-createUsers(serviceRoleKey);
+createUsers(serviceRoleKey, password);
