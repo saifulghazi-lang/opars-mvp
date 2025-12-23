@@ -80,27 +80,25 @@ export function ProposalDetail() {
 
             if (reviewData) setUserReview(reviewData);
 
-            // Fetch all members and their vote status (for admins)
-            if (user.role === 'admin') {
-                const { data: members } = await supabase
-                    .from('profiles')
-                    .select('id, email, department')
-                    .eq('role', 'member');
+            // Fetch all members and their vote status (visible to everyone)
+            const { data: members } = await supabase
+                .from('profiles')
+                .select('id, email, department')
+                .eq('role', 'member');
 
-                const { data: allReviews } = await supabase
-                    .from('reviews')
-                    .select('reviewer_id, vote_status')
-                    .eq('proposal_id', id);
+            const { data: allReviews } = await supabase
+                .from('reviews')
+                .select('reviewer_id, vote_status')
+                .eq('proposal_id', id);
 
-                if (members && allReviews) {
-                    const reviewMap = new Map(allReviews.map(r => [r.reviewer_id, r.vote_status]));
-                    const statusList: VoteStatusMember[] = members.map(member => ({
-                        ...member,
-                        hasVoted: reviewMap.has(member.id),
-                        voteStatus: reviewMap.get(member.id),
-                    }));
-                    setVoteStatus(statusList);
-                }
+            if (members && allReviews) {
+                const reviewMap = new Map(allReviews.map(r => [r.reviewer_id, r.vote_status]));
+                const statusList: VoteStatusMember[] = members.map(member => ({
+                    ...member,
+                    hasVoted: reviewMap.has(member.id),
+                    voteStatus: reviewMap.get(member.id),
+                }));
+                setVoteStatus(statusList);
             }
 
             setLoading(false);
@@ -297,8 +295,8 @@ export function ProposalDetail() {
                     </Card>
                 )}
 
-                {/* Vote Tracker (Admin Only) */}
-                {user?.role === 'admin' && voteStatus.length > 0 && (
+                {/* Vote Tracker (Visible to Everyone) */}
+                {voteStatus.length > 0 && (
                     <Card>
                         <CardHeader>
                             <div className="flex items-center justify-between">
