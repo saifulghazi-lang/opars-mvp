@@ -10,10 +10,13 @@ import { Login } from './pages/Login';
 import { Landing } from './pages/Landing';
 
 function ProtectedRoute() {
-  const { user, loading } = useAuth();
+  const { user, session, loading } = useAuth();
 
+  // Show loading while auth is being determined
   if (loading) return <div className="h-screen flex items-center justify-center">Loading...</div>;
-  if (!user) return <Navigate to="/login" replace />;
+
+  // Check session first (available immediately after login), then user (populated after profile fetch)
+  if (!session && !user) return <Navigate to="/login" replace />;
 
   return (
     <Layout>
