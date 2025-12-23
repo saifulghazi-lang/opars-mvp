@@ -76,7 +76,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             if (error) {
                 console.error('Error fetching profile:', error);
-                // Fallback or handle error - maybe user exists in Auth but not in profiles table yet
+                // Fallback: Create a basic user object so login doesn't fail
+                // This handles the case where auth succeeds but profile doesn't exist yet
+                setUser({
+                    id: userId,
+                    email: email,
+                    role: 'member', // Default role
+                    department: 'Unknown',
+                });
             } else if (data) {
                 setUser({
                     id: data.id,
@@ -87,6 +94,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
         } catch (error) {
             console.error('Unexpected error fetching profile:', error);
+            // Fallback on catch as well
+            setUser({
+                id: userId,
+                email: email,
+                role: 'member',
+                department: 'Unknown',
+            });
         } finally {
             setLoading(false);
         }
