@@ -76,7 +76,7 @@ export function ProposalDetail() {
                 .select('*')
                 .eq('proposal_id', id)
                 .eq('reviewer_id', user.id)
-                .single();
+                .maybeSingle();
 
             if (reviewData) setUserReview(reviewData);
 
