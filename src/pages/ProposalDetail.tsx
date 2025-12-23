@@ -118,8 +118,7 @@ export function ProposalDetail() {
             // Simulate network delay
             await new Promise(resolve => setTimeout(resolve, 800));
 
-            // Skip database call, go straight to success
-            console.log('SIMULATION: Vote submitted', { vote, comments, signature });
+            // Dev mode simulation - skip database call
         } else {
             // REAL MODE
             // FALLBACK: Direct Database Insert (Bypassing Edge Function due to CORS/Network issues)
